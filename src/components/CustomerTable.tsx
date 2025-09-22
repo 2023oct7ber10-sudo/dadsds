@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Phone, Calendar, DollarSign } from "lucide-react";
+import { Plus, Edit, Trash2, Phone, Calendar, DollarSign, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Customer {
@@ -22,10 +22,11 @@ interface Customer {
 
 interface CustomerTableProps {
   onAddCustomer: () => void;
+  onAddBulkCustomers: () => void;
   onEditCustomer: (customer: Customer) => void;
 }
 
-export const CustomerTable = ({ onAddCustomer, onEditCustomer }: CustomerTableProps) => {
+export const CustomerTable = ({ onAddCustomer, onAddBulkCustomers, onEditCustomer }: CustomerTableProps) => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -157,10 +158,16 @@ export const CustomerTable = ({ onAddCustomer, onEditCustomer }: CustomerTablePr
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">قائمة العملاء</h2>
-        <Button onClick={onAddCustomer} className="hover-scale">
-          <Plus className="h-4 w-4 ml-2" />
-          إضافة عميل جديد
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={onAddBulkCustomers} variant="outline" className="hover-scale">
+            <UserPlus className="h-4 w-4 ml-2" />
+            إضافة عدة عملاء
+          </Button>
+          <Button onClick={onAddCustomer} className="hover-scale">
+            <Plus className="h-4 w-4 ml-2" />
+            إضافة عميل واحد
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-lg border shadow-sm overflow-hidden">
@@ -250,10 +257,16 @@ export const CustomerTable = ({ onAddCustomer, onEditCustomer }: CustomerTablePr
       {customers.length === 0 && (
         <div className="text-center py-12 animate-fade-in">
           <div className="text-muted-foreground text-lg">لا توجد بيانات عملاء</div>
-          <Button onClick={onAddCustomer} className="mt-4 hover-scale">
-            <Plus className="h-4 w-4 ml-2" />
-            إضافة أول عميل
-          </Button>
+          <div className="flex gap-2 justify-center mt-4">
+            <Button onClick={onAddBulkCustomers} variant="outline" className="hover-scale">
+              <UserPlus className="h-4 w-4 ml-2" />
+              إضافة عدة عملاء
+            </Button>
+            <Button onClick={onAddCustomer} className="hover-scale">
+              <Plus className="h-4 w-4 ml-2" />
+              إضافة عميل واحد
+            </Button>
+          </div>
         </div>
       )}
     </div>

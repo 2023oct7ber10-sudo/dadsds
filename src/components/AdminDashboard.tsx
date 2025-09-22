@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Dashboard } from "@/components/Dashboard";
 import { CustomerTable } from "@/components/CustomerTable";
 import { CustomerForm } from "@/components/CustomerForm";
+import { BulkCustomerForm } from "@/components/BulkCustomerForm";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Users, Plus } from "lucide-react";
+import { BarChart3, Users, Plus, UserPlus } from "lucide-react";
 
 interface Customer {
   id: number;
@@ -23,11 +24,20 @@ interface Customer {
 export const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showForm, setShowForm] = useState(false);
+  const [showBulkForm, setShowBulkForm] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
   const handleAddCustomer = () => {
     setEditingCustomer(null);
     setShowForm(true);
+    setShowBulkForm(false);
+    setActiveTab("customers");
+  };
+
+  const handleAddBulkCustomers = () => {
+    setEditingCustomer(null);
+    setShowForm(false);
+    setShowBulkForm(true);
     setActiveTab("customers");
   };
 
@@ -38,17 +48,19 @@ export const AdminDashboard = () => {
 
   const handleSaveCustomer = () => {
     setShowForm(false);
+    setShowBulkForm(false);
     setEditingCustomer(null);
   };
 
   const handleCancelForm = () => {
     setShowForm(false);
+    setShowBulkForm(false);
     setEditingCustomer(null);
   };
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {!showForm ? (
+      {!showForm && !showBulkForm ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <div className="flex justify-center">
             <TabsList className="grid w-full max-w-2xl grid-cols-2 animate-scale-in shadow-lg bg-white/80 backdrop-blur-sm">
@@ -70,27 +82,42 @@ export const AdminDashboard = () => {
           <TabsContent value="customers" className="mt-8">
             <CustomerTable 
               onAddCustomer={handleAddCustomer}
+              onAddBulkCustomers={handleAddBulkCustomers}
               onEditCustomer={handleEditCustomer}
             />
           </TabsContent>
         </Tabs>
-      ) : (
+      ) : showForm ? (
         <CustomerForm
           customer={editingCustomer}
+          onSave={handleSaveCustomer}
+          onCancel={handleCancelForm}
+        />
+      ) : (
+        <BulkCustomerForm
           onSave={handleSaveCustomer}
           onCancel={handleCancelForm}
         />
       )}
 
       {/* Floating Action Button for Mobile */}
-      <div className="fixed bottom-6 right-6 md:hidden">
-        <Button
-          onClick={handleAddCustomer}
-          size="lg"
-          className="rounded-full h-14 w-14 shadow-lg hover-scale animate-bounce bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-        >
-          <Plus className="h-6 w-6" />
-        </Button>
+      <div className="fixed bottom-6 right-6 md:hidden flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
+          <Button
+            onClick={handleAddBulkCustomers}
+            size="lg"
+            className="rounded-full h-14 w-14 shadow-lg hover-scale bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+          >
+            <UserPlus className="h-6 w-6" />
+          </Button>
+          <Button
+            onClick={handleAddCustomer}
+            size="lg"
+            className="rounded-full h-14 w-14 shadow-lg hover-scale animate-bounce bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+          >
+            <Plus className="h-6 w-6" />
+          </Button>
+        </div>
       </div>
     </div>
   );
